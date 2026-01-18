@@ -15,7 +15,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
 
-
 def pei_figure(df, image_name):
     # trouvers les informations de la colonne de catégorie
     category_counts = df['Product category'].value_counts()

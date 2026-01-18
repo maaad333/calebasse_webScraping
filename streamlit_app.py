@@ -1,14 +1,41 @@
 import pandas as pd
 import streamlit as st
 
-from code import (
+from code import ( 
+    process_equipement_products,
+    process_herbal_products,
+    scrap_equipement_products,
+    scrap_herbal_products,
     pei_figure,
     bar_figure,
     plot_box_visualisation,
-    pie_figure_herbal,
-    bar_figure_herbal,
-    plot_box_visualisation_herbal
+    plot_pie_categorie,
+    plot_bar_price,
+    plot_heatmap, 
 )
+
+def compare_food_equipements(df_food, df_equipement, image_name):
+    import matplotlib.pyplot as plt
+
+    nb_food = len(df_food)
+    nb_eq = len(df_equipement)
+
+    labels = ['Food (Herbal)', 'Equipment']
+    data = [nb_food, nb_eq]
+
+    fig, ax = plt.subplots(figsize=(6, 6))
+    ax.pie(
+        data,
+        labels=labels,
+        autopct='%1.1f%%',
+        startangle=90
+    )
+    ax.set_title('Répartition des produits')
+    ax.axis('equal')
+
+    fig.savefig(image_name, dpi=300, bbox_inches='tight')
+    st.pyplot(fig)
+
 
 # --------------------------------------------------
 def main():
@@ -19,38 +46,22 @@ def main():
 
     st.title("🌿 Calebasse — Product Data Analysis")
     st.markdown("Données issues du site Calebasse Laboratoire")
+    eq_path_csv = "data/final_process_equipement.csv"
+    eq_df = pd.read_csv(eq_path_csv)
+    food_path_csv = "data/final_herb_products.csv"
+    food_df = pd.read_csv(food_path_csv)
+    compare_food_equipements(food_df, eq_df, image_name="demo/images/food_eq_products.png")
+    path_csv = "data/raw_physical_products.csv"
+    df = pd.read_csv(path_csv)
+    pei_figure(df=df, image_name="demo/images/equipements_pei_category.png")
+    bar_figure(df=df, image_name="demo/images/equipements_bar_price.png")
+    plot_box_visualisation(df=df, image_name="demo/images/equipements_plotbox_price.png")
 
-    # =============================
-    # LOAD DATA
-    # =============================
-    df_eq = pd.read_csv('data/final_process_equipement.csv')
-    df_food = pd.read_csv('data/final_herb_products.csv')
-    df_raw_eq = pd.read_csv('data/raw_physical_products.csv')
-
-    # =============================
-    # GLOBAL
-    # =============================
-    st.header("📊 Global overview")
-    st.metric("Nombre produits plantes", len(df_food))
-    st.metric("Nombre produits équipement", len(df_eq))
-
-    # =============================
-    # EQUIPMENT
-    # =============================
-    st.header("🔧 Equipement products")
-    pei_figure(df_raw_eq, "demo/images/eq_pie.png")
-    bar_figure(df_raw_eq, "demo/images/eq_bar.png")
-    plot_box_visualisation(df_raw_eq, "demo/images/eq_box.png")
-
-    # =============================
-    # HERBAL
-    # =============================
-    st.header("🌱 Herbal products")
-    pie_figure_herbal(df_food, "demo/images/herbal_pie.png")
-    bar_figure_herbal(df_food, "demo/images/herbal_bar.png")
-    plot_box_visualisation_herbal(df_food, "demo/images/herbal_box.png")
-
-    st.success("✅ Visualisation chargée")
+    plot_pie_categorie("Product category", "Catégories de produits de plantes", "demo/images/herbal_cate_product.png")
+    plot_pie_categorie("Use category", "Catégories d'usage des produits de plantes", "demo/images/herbal_cate_use.png")
+    plot_bar_price("Product category", 'Prix moyen par catégorie de produit', "demo/images/herbal_price_product.png")
+    plot_bar_price("Use category", 'Prix moyen par catégorie des usages de produit', "demo/images/herbal_price_use.png")
+    plot_heatmap("demo/images/herbal_heatmap.png")
 
 
 # --------------------------------------------------

@@ -12,10 +12,11 @@ from code import (
     pei_figure,
     bar_figure,
     plot_box_visualisation,
-    pie_figure_herbal,
-    bar_figure_herbal,
-    plot_box_visualisation_herbal
+    plot_pie_categorie,
+    plot_bar_price,
+    plot_heatmap, 
 )
+
 
 # --------------------------------------------------
 # Utility
@@ -55,6 +56,7 @@ def main():
     st.title("📊 Calebasse — Product Data Pipeline")
     st.markdown("Scraping → Processing → Visualization")
 
+    """
     # =============================
     # 1️⃣ SCRAPING
     # =============================
@@ -69,42 +71,37 @@ def main():
     # =============================
     # 2️⃣ PROCESSING
     # =============================
-    with st.spinner("Processing data..."):
-        process_equipement_products()
-        process_herbal_products()
+
+    process_equipement_products()
+    process_herbal_products()
+    
 
     st.success("Traitement terminé")
-
+    """
+    
     # =============================
-    # 3️⃣ LOAD DATA
+    # 3️⃣ VISUALIZATION
     # =============================
-    df_eq = pd.read_csv('data/final_process_equipement.csv')
-    df_food = pd.read_csv('data/final_herb_products.csv')
-    df_raw_eq = pd.read_csv('data/raw_physical_products.csv')
 
-    # =============================
-    # 4️⃣ VISUALISATION
-    # =============================
-    st.header("📌 Global comparison")
-    compare_food_equipements(
-        df_food,
-        df_eq,
-        image_name='demo/images/food_eq_products.png'
-    )
+    
+    eq_path_csv = "data/final_process_equipement.csv"
+    eq_df = pd.read_csv(eq_path_csv)
+    food_path_csv = "data/final_herb_products.csv"
+    food_df = pd.read_csv(food_path_csv)
+    compare_food_equipements(food_df, eq_df, image_name="demo/images/food_eq_products.png")
+    path_csv = "data/raw_physical_products.csv"
+    df = pd.read_csv(path_csv)
+    pei_figure(df=df, image_name="demo/images/equipements_pei_category.png")
+    bar_figure(df=df, image_name="demo/images/equipements_bar_price.png")
+    plot_box_visualisation(df=df, image_name="demo/images/equipements_plotbox_price.png")
 
-    st.header("🔧 Equipement analysis")
-    pei_figure(df=df_raw_eq, image_name='demo/images/eq_pie.png')
-    bar_figure(df=df_raw_eq, image_name='demo/images/eq_bar.png')
-    plot_box_visualisation(df=df_raw_eq, image_name='demo/images/eq_box.png')
-
-    st.header("🌿 Herbal products analysis")
-    pie_figure_herbal(df_food, 'demo/images/herbal_pie.png')
-    bar_figure_herbal(df_food, 'demo/images/herbal_bar.png')
-    plot_box_visualisation_herbal(df_food, 'demo/images/herbal_box.png')
-
-    st.success("🎉 Pipeline exécuté avec succès")
-
+    plot_pie_categorie("Product category", "Catégories de produits de plantes", "demo/images/herbal_cate_product.png")
+    plot_pie_categorie("Use category", "Catégories d'usage des produits de plantes", "demo/images/herbal_cate_use.png")
+    plot_bar_price("Product category", 'Prix moyen par catégorie de produit', "demo/images/herbal_price_product.png")
+    plot_bar_price("Use category", 'Prix moyen par catégorie des usages de produit', "demo/images/herbal_price_use.png")
+    plot_heatmap("demo/images/herbal_heatmap.png")
 
 # --------------------------------------------------
 if __name__ == '__main__':
+    
     main()
